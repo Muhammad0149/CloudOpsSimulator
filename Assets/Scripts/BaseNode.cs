@@ -5,8 +5,10 @@ public abstract class BaseNode : MonoBehaviour
 {
     [Header("Node Configuration")]
     public string NodeName = "Base Node";
+    public Color NodeColor = Color.white;
     public int MaxQueueCapacity = 10;
     public float ProcessingRatePerSecond = 2f;
+    public int CurrentQueueCount => IncomingQueue.Count;
 
     [Header("Connections")]
     public List<BaseNode> OutputNodes = new List<BaseNode>();
@@ -20,18 +22,31 @@ public abstract class BaseNode : MonoBehaviour
 
     // Subclasses override this to say what they should be called by default.
     protected virtual string DefaultNodeName => "Base Node";
+    protected virtual Color DefaultNodeColor => Color.white;
 
     protected virtual void Awake()
     {
-        // Only replace the name if it's still the untouched base default —
+        // Only replace the name if it's still the untouched base default â€”
         // anything typed in manually in the Inspector is left alone.
         if (string.IsNullOrWhiteSpace(NodeName) || NodeName == "Base Node")
         {
             NodeName = DefaultNodeName;
         }
 
+        if (NodeColor == Color.white)
+        {
+            NodeColor = DefaultNodeColor;
+        }
+
         _nodeRenderer = GetComponent<Renderer>();
-        _propBlock = new MaterialPropertyBlock();
+        if (_nodeRenderer != null)
+        {
+            _propBlock = new MaterialPropertyBlock();
+            _nodeRenderer.GetPropertyBlock(_propBlock);
+            _propBlock.SetColor("_BaseColor", NodeColor);
+            _propBlock.SetColor("_Color", NodeColor);
+            _nodeRenderer.SetPropertyBlock(_propBlock);
+        }
     }
 
     public virtual bool ReceiveRequest(NetworkRequest req)
@@ -40,19 +55,16 @@ public abstract class BaseNode : MonoBehaviour
         {
             Debug.LogWarning($"[DROP] {NodeName} queue full! Request {req.Id} dropped.");
             NetworkTelemetry.Instance?.RegisterDrop();
-            UpdateNodeColor();
             return false;
         }
 
         IncomingQueue.Enqueue(req);
-        UpdateNodeColor();
         return true;
     }
 
     protected virtual void Update()
     {
         ProcessQueue();
-        UpdateNodeColor();
     }
 
     protected virtual void ProcessQueue()
@@ -93,8 +105,8 @@ public abstract class BaseNode : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[SUCCESS] Request {req.Id} completed at {NodeName}.");
-            NetworkTelemetry.Instance?.RegisterSuccess();
+            Debug.Log($"[SUCCESS] Request {req.Id} ({req.Type}) completed at {NodeName}.");
+            NetworkTelemetry.Instance?.RegisterSuccess(req.Type);
         }
     }
 
@@ -104,7 +116,7 @@ public abstract class BaseNode : MonoBehaviour
         {
             if (node.ReceiveRequest(req))
             {
-                TrafficVisualizer.Instance?.SpawnPayloadVisual(transform.position, node.transform.position);
+                TrafficVisualizer.Instance?.SpawnPayloadVisual(transform.position, node.transform.position, req.Type);
                 return;
             }
         }
@@ -113,37 +125,13 @@ public abstract class BaseNode : MonoBehaviour
         NetworkTelemetry.Instance?.RegisterDrop();
     }
 
-    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
-    private static readonly int ColorID = Shader.PropertyToID("_Color");
-
-    private void UpdateNodeColor()
+    private void OnMouseEnter()
     {
-        if (_nodeRenderer == null) return;
+        TooltipManager.Instance?.ShowTooltip(NodeName);
+    }
 
-        float fillRatio = (float)IncomingQueue.Count / MaxQueueCapacity;
-        Color statusColor;
-
-        if (fillRatio >= 0.85f)
-        {
-            statusColor = Color.red;
-        }
-        else if (fillRatio >= 0.50f)
-        {
-            statusColor = Color.yellow;
-        }
-        else
-        {
-            statusColor = Color.green;
-        }
-
-        _nodeRenderer.GetPropertyBlock(_propBlock);
-        _propBlock.SetColor(BaseColorID, statusColor);
-        _propBlock.SetColor(ColorID, statusColor);
-        _nodeRenderer.SetPropertyBlock(_propBlock);
-
-        if (_nodeRenderer.material != null && _nodeRenderer.material.HasProperty("_Color"))
-        {
-            _nodeRenderer.material.color = statusColor;
-        }
+    private void OnMouseExit()
+    {
+        TooltipManager.Instance?.HideTooltip();
     }
 }

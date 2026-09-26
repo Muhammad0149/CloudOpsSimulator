@@ -3,6 +3,7 @@ using UnityEngine;
 public class LoadBalancerNode : BaseNode
 {
     protected override string DefaultNodeName => "Load Balancer";
+    protected override Color DefaultNodeColor => Color.blue;
 
     private int _rrIndex = 0;
 
@@ -23,7 +24,7 @@ public class LoadBalancerNode : BaseNode
         }
         else
         {
-            TrafficVisualizer.Instance?.SpawnPayloadVisual(transform.position, target.transform.position);
+            TrafficVisualizer.Instance?.SpawnPayloadVisual(transform.position, target.transform.position, req.Type);
         }
     }
 }

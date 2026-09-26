@@ -6,7 +6,11 @@ public class NodePlacementManager : MonoBehaviour
     public GameObject ClientGeneratorPrefab; // Yellow Sphere
     public GameObject LoadBalancerPrefab;     // Blue Cylinder
     public GameObject ComputePrefab;          // Green Cube
-    public GameObject FirewallPrefab;         // New: Firewall node prefab
+    public GameObject FirewallPrefab;         // Red Block
+    public GameObject CdnPrefab;              // CDN Node
+    public GameObject StoragePrefab;          // Storage Node
+    public GameObject DatabasePrefab;         // Database Node
+    public GameObject CachePrefab;            // Cache Node
 
     public Material CableMaterial;
 
@@ -20,6 +24,10 @@ public class NodePlacementManager : MonoBehaviour
             if (Keyboard.current.digit2Key.wasPressedThisFrame) SpawnNodeAtMouse(LoadBalancerPrefab);
             if (Keyboard.current.digit3Key.wasPressedThisFrame) SpawnNodeAtMouse(ComputePrefab);
             if (Keyboard.current.digit4Key.wasPressedThisFrame) SpawnNodeAtMouse(FirewallPrefab);
+            if (Keyboard.current.digit5Key.wasPressedThisFrame) SpawnNodeAtMouse(CdnPrefab);
+            if (Keyboard.current.digit6Key.wasPressedThisFrame) SpawnNodeAtMouse(StoragePrefab);
+            if (Keyboard.current.digit7Key.wasPressedThisFrame) SpawnNodeAtMouse(DatabasePrefab);
+            if (Keyboard.current.digit8Key.wasPressedThisFrame) SpawnNodeAtMouse(CachePrefab);
         }
 
         if (Mouse.current != null)

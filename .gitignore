@@ -83,3 +83,8 @@ Thumbs.db
 .idea/
 *.sln.DotSettings.user
 .vscode/
+
+# Local-only project files
+.agents/
+plan.md
+CHANGELOG.md

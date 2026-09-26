@@ -3,6 +3,7 @@ using UnityEngine;
 public class FirewallNode : BaseNode
 {
     protected override string DefaultNodeName => "Firewall";
+    protected override Color DefaultNodeColor => Color.red;
 
     [Header("Firewall Settings")]
     [Range(0f, 1f)]
@@ -14,7 +15,7 @@ public class FirewallNode : BaseNode
         {
             Debug.Log($"[BLOCKED] {NodeName} filtered malicious request {req.Id}.");
             NetworkTelemetry.Instance?.RegisterBlocked();
-            return true; // Absorbed here — never queued, never forwarded further
+            return true; // Absorbed here â€” never queued, never forwarded further
         }
 
         // Standard traffic, and any malicious traffic that slips past

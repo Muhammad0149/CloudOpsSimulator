@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 4401017363309425116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.47093, y: 0, z: 51.78377}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -130,3 +130,9 @@ MonoBehaviour:
   ProcessingRatePerSecond: 2
   OutputNodes: []
   RequestsPerSecond: 1
+  StaticChance: 0.3
+  ReadChance: 0.2
+  WriteChance: 0.15
+  UploadChance: 0.05
+  SearchChance: 0.1
+  MaliciousChance: 0.2

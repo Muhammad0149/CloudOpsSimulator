@@ -7,7 +7,6 @@ public class NetworkTelemetry : MonoBehaviour
 
     [Header("Economy Settings")]
     public float Budget = 1000f;
-    public float RevenuePerRequest = 2f;
     public float NodeUpkeepInterval = 5f;
     public float BreachPenalty = 25f;
 
@@ -60,10 +59,10 @@ public class NetworkTelemetry : MonoBehaviour
         _requestsThisSecond++;
     }
 
-    public void RegisterSuccess()
+    public void RegisterSuccess(RequestType type = RequestType.Static)
     {
         TotalRequestsSuccessful++;
-        Budget += RevenuePerRequest;
+        Budget += RequestTypeInfo.GetReward(type);
     }
 
     public void RegisterDrop()
@@ -82,7 +81,7 @@ public class NetworkTelemetry : MonoBehaviour
     public void RegisterBlocked()
     {
         TotalBlocked++;
-        // Intentionally no Budget/Reputation/Goodput impact — this is the
+        // Intentionally no Budget/Reputation/Goodput impact â€” this is the
         // system working correctly, not a success or a failure event.
     }
 

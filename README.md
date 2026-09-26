@@ -63,10 +63,19 @@ Hover your mouse over the game plane and press the corresponding number key to s
 | **`2`** | **Load Balancer** | Distributes incoming network requests across downstream nodes (Round Robin). |
 | **`3`** | **Compute Node** | Processes incoming requests and generates revenue upon successful processing. |
 | **`4`** | **Firewall** | Inspects payloads and filters out malicious traffic before reaching servers. |
+| **`5`** | **CDN** | Caches STATIC requests for fast response times. Misses are forwarded downstream. |
+| **`6`** | **Storage** | Terminating node for STATIC and UPLOAD data requests. |
+| **`7`** | **Database** | Terminating node for READ, WRITE, and SEARCH queries. |
+| **`8`** | **Cache** | Caches READ queries to reduce load on databases. Misses are forwarded downstream. |
 
-### Network Wiring & Routing
-- **Connect Nodes:** **Left-Click** on a source node to select it, then **Left-Click** on a target node to establish a directional network cable connection.
-- **Cancel Selection:** **Right-Click** anywhere to cancel the current node selection.
+### Camera Controls & Navigation
+- **Pan View:** Press **`W`**, **`A`**, **`S`**, **`D`** (or arrow keys) to smoothly pan the camera across the grid floor relative to your screen view. Hold **`Left-Shift`** to sprint / pan at double speed.
+- **Zoom In / Out:** Use the **Mouse Scroll Wheel** to dolly smoothly along the camera's sightline.
+
+### Modernized Command HUD & Quickbar
+- **Top Command Header:** Glassmorphic status bar displaying real-time formatted metrics (Budget, Traffic RPS, Goodput %, Reputation %, Drops, and Breaches) with color coding and status pills.
+- **Bottom Build Dock:** Quick-access dock showing hotkey shortcuts `[1]` to `[8]` for each infrastructure node type with color-coded badges.
+- **Interactive Tooltips:** Hovering over nodes in the topology displays live queue capacity (`queue/max`) and processing rate.
 
 ---
 
@@ -85,6 +94,18 @@ Hover your mouse over the game plane and press the corresponding number key to s
 
 4. **[ComputeNode](Assets/Scripts/ComputeNode.cs):**
    - Acts as the backend server. Successfully processing legitimate requests earns revenue; processing uncaught malicious requests triggers a security breach penalty.
+
+5. **[CDNNode](Assets/Scripts/CDNNode.cs):**
+   - Intercepts and caches STATIC traffic with a high hit rate. Misses and other traffic are forwarded downstream.
+
+6. **[StorageNode](Assets/Scripts/StorageNode.cs):**
+   - A dedicated node that permanently stores data, terminating STATIC and UPLOAD traffic.
+
+7. **[DatabaseNode](Assets/Scripts/DatabaseNode.cs):**
+   - The core data persistence layer, terminating READ, WRITE, and SEARCH queries.
+
+8. **[CacheNode](Assets/Scripts/CacheNode.cs):**
+   - Speeds up database queries by caching READ traffic. Misses and writes are passed through to the database.
 
 ---
 
@@ -105,17 +126,25 @@ The simulation features a real-time observability engine via [NetworkTelemetry](
 
 ```
 Assets/
-├── Prefabs/             # Node prefabs (Client, Firewall, Load Balancer, Compute)
+├── GridColor.mat        # High-tech cyber grid floor material
+├── TechGrid.png         # Seamless 512x512 cyber blueprint grid texture
+├── Prefabs/             # Node prefabs (Client, Firewall, Load Balancer, Compute, CDN, Storage, DB, Cache)
 ├── Scenes/              # Game scenes (SampleScene.unity)
 ├── Scripts/             # Core simulation logic & managers
 │   ├── BaseNode.cs              # Base abstract class for network nodes
+│   ├── CameraController.cs      # Screen-relative panning & sightline zoom
+│   ├── CDNNode.cs               # CDN caching node
+│   ├── CacheNode.cs             # Redis-style database query cache
 │   ├── ComputeNode.cs           # Backend processing node
+│   ├── DatabaseNode.cs          # SQL/NoSQL data persistence layer
 │   ├── FirewallNode.cs          # Threat detection & packet filtering
-│   ├── HUDManager.cs            # Live on-screen telemetry UI
+│   ├── HUDManager.cs            # Live telemetry header & build quickbar
 │   ├── LoadBalancerNode.cs      # Round-robin request router
 │   ├── NetworkRequest.cs        # Request payload definition
 │   ├── NetworkTelemetry.cs      # System economics & metrics tracker
 │   ├── NodePlacementManager.cs  # Player input & node placement
+│   ├── StorageNode.cs           # S3-style object storage node
+│   ├── TooltipManager.cs        # Real-time node inspection tooltips
 │   ├── TrafficGeneratorNode.cs  # Ingress traffic generator
 │   └── TrafficVisualizer.cs     # Real-time packet path visualizer
 └── Settings/            # URP and Project configuration assets
